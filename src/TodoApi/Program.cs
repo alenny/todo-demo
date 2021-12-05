@@ -21,26 +21,49 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/todoitems", async (TodoItem todo, TodoDbContext db) =>
-{
+app.MapPost("/userprofiles", async (UserProfile profile, TodoDbContext db) => {
+    db.UserProfiles.Add(profile);
+    await db.SaveChangesAsync();
+    return Results.Created($"/userprofiles/{profile.Id}", profile);
+});
+
+app.MapGet("/userprofiles", async (TodoDbContext db) => await db.UserProfiles.ToListAsync());
+
+app.MapGet("/userprofiles/{id}", async (long id, TodoDbContext db) => 
+    await db.UserProfiles.FindAsync(id) is UserProfile profile ? Results.Ok(profile) : Results.NotFound(id));
+
+app.MapPost("/todoitems", async (TodoItem todo, TodoDbContext db) => {
+    var profile = await db.UserProfiles.FindAsync(todo.UserId);
+    if (profile == null) {
+        return Results.NotFound(new { UserId = todo.UserId });
+    }
     db.TodoItems.Add(todo);
     await db.SaveChangesAsync();
     return Results.Created($"/todoitems/{todo.Id}", todo);
 });
 
-app.MapPut("/todoitems/{id}", async (long id, TodoItem todo, TodoDbContext db) =>
-{
+app.MapPut("/todoitems/{id}", async (long id, TodoItem todo, TodoDbContext db) => {
     var oldTodo = await db.TodoItems.FindAsync(id);
     if (oldTodo == null) {
-        return Results.NotFound();
+        return Results.NotFound(new { id });
+    }
+    var profile = await db.UserProfiles.FindAsync(todo.UserId);
+    if (profile == null) {
+        return Results.NotFound(new { UserId = todo.UserId });
     }
     await db.SaveChangesAsync();
-    return Results.Created($"/todoitems/{todo.Id}", todo);
+    return Results.NoContent();
 });
 
 app.MapGet("/todoitems", async (TodoDbContext db) => await db.TodoItems.ToListAsync());
 
-app.MapGet("/todoitems/{id}", async (long id, TodoDbContext db) =>
-    await db.TodoItems.FindAsync(id) is TodoItem todo ? Results.Ok(todo) : Results.NotFound());
+app.MapGet("/userprofiles/{id}/todoitems", async (long id, TodoDbContext db) => {
+    var profile = await db.UserProfiles.FindAsync(id);
+    if (profile == null) {
+        return Results.NotFound(new { id });
+    }
+    var ret = await db.TodoItems.Where(todo => todo.UserId == id).ToListAsync();
+    return Results.Ok(ret);
+});
 
 app.Run();
