@@ -27,6 +27,11 @@ export class DataService {
 
   }
 
+  getUserProfile(id: number): Observable<UserProfile> {
+    let p = this.profiles.filter(p => p.id === id);
+    return of(p[0]);
+  }
+
   getUserProfiles(): Observable<UserProfile[]> {
     return of(this.profiles);
   }

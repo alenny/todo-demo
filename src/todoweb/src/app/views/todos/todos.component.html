@@ -1,1 +1,9 @@
-<p>todos works!</p>
+<h1>{{profile?.name}}'s Todo List</h1>
+<div class="todo-list">
+    <mat-card *ngFor="let item of todoItems" class="todo-card">
+        {{item.description}}
+    </mat-card>
+</div>
+<div>
+    <button mat-flat-button color="accent" [routerLink]="['profiles']">Back</button>
+</div>
