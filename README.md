@@ -1,4 +1,4 @@
-# Project name: todo-demo
+# Project Name: todo-demo
 ## Requirements
 - List Todo Items
 - Add a Todo item
@@ -10,7 +10,7 @@
 - .NET 6 SDK
 - Node.js 16
 
-## Run Todo web API
+## Run Todo Web API
 1. Make sure .NET 6 SDK has been installed.
 2. Go to src/TodoApi in a command prompt.
 3. Run command:
@@ -18,10 +18,15 @@
 dotnet run
 ```
 
-## Run Todo web site
+## Run Todo Web site
 1. Make sure Node.js 16 has been installed.
 2. Go to src/todoweb in a command prompt.
 3. Run command:
 ```
 npm start
 ```
+
+## Re-create Database with Initial Data
+1. Delete all DB files in src/TodoApi, including todo.db, todo.db-shm and todo.db-wal.
+2. Re-run Todo web API
+
