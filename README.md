@@ -23,7 +23,7 @@ dotnet run
 ## Run Todo Web site
 1. Make sure Node.js 16 has been installed.
 2. Go to src/todoweb in a command prompt.
-3. Run command:
+3. Run commands:
 ```
 npm install
 npm start
