@@ -6,7 +6,6 @@ namespace Todo.DataContexts {
         public TodoDbContext(DbContextOptions<TodoDbContext> options)
             : base(options) { }
 
-        public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
         public DbSet<TodoItem> TodoItems => Set<TodoItem>();
     }
 }

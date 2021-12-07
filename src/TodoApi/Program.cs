@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.InMemory;
+//using Microsoft.EntityFrameworkCore.InMemory;
+using Microsoft.EntityFrameworkCore.Sqlite;
 using Todo.Models;
 using Todo.DataContexts;
 
@@ -8,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<TodoDbContext>(opt => opt.UseInMemoryDatabase("TodoDb"));
+//builder.Services.AddDbContext<TodoDbContext>(opt => opt.UseInMemoryDatabase("TodoDb"));
+builder.Services.AddDbContext<TodoDbContext>(opt => opt.UseSqlite(builder.Configuration.GetConnectionString("TodoDb")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var app = builder.Build();
@@ -19,51 +21,46 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Create database and insert initial data if the database file does not exist
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<TodoDbContext>();
+    context.Database.EnsureCreated();
+    DbInitializer.Initialize(context);
+}
+
 app.UseHttpsRedirection();
 
-app.MapPost("/userprofiles", async (UserProfile profile, TodoDbContext db) => {
-    db.UserProfiles.Add(profile);
-    await db.SaveChangesAsync();
-    return Results.Created($"/userprofiles/{profile.Id}", profile);
-});
-
-app.MapGet("/userprofiles", async (TodoDbContext db) => await db.UserProfiles.ToListAsync());
-
-app.MapGet("/userprofiles/{id}", async (long id, TodoDbContext db) => 
-    await db.UserProfiles.FindAsync(id) is UserProfile profile ? Results.Ok(profile) : Results.NotFound(id));
-
+// Create a new todo item
 app.MapPost("/todoitems", async (TodoItem todo, TodoDbContext db) => {
-    var profile = await db.UserProfiles.FindAsync(todo.UserId);
-    if (profile == null) {
-        return Results.NotFound(new { UserId = todo.UserId });
-    }
     db.TodoItems.Add(todo);
     await db.SaveChangesAsync();
     return Results.Created($"/todoitems/{todo.Id}", todo);
 });
 
+// Update an existing todo item
 app.MapPut("/todoitems/{id}", async (long id, TodoItem todo, TodoDbContext db) => {
-    var oldTodo = await db.TodoItems.FindAsync(id);
-    if (oldTodo == null) {
+    var item = await db.TodoItems.FindAsync(id);
+    if (item == null) {
         return Results.NotFound(new { id });
     }
-    var profile = await db.UserProfiles.FindAsync(todo.UserId);
-    if (profile == null) {
-        return Results.NotFound(new { UserId = todo.UserId });
-    }
+    item.Id = id;
+    item.Description = todo.Description;
+    item.State = todo.State;
+    item.DateTarget = todo.DateTarget;
+    item.DateCompleted = todo.DateCompleted;
     await db.SaveChangesAsync();
     return Results.NoContent();
 });
 
+// Get all todo items
 app.MapGet("/todoitems", async (TodoDbContext db) => await db.TodoItems.ToListAsync());
 
-app.MapGet("/userprofiles/{id}/todoitems", async (long id, TodoDbContext db) => {
-    var profile = await db.UserProfiles.FindAsync(id);
-    if (profile == null) {
-        return Results.NotFound(new { id });
-    }
-    var ret = await db.TodoItems.Where(todo => todo.UserId == id).ToListAsync();
-    return Results.Ok(ret);
+// Get one specified todo item
+app.MapGet("/todoitems/{id}", async (long id, TodoDbContext db) => {
+    var item = await db.TodoItems.FindAsync(id);
+    return item != null ? Results.Ok(item) : Results.NotFound(new { id });
 });
 
 app.Run();
