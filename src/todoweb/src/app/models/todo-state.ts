@@ -1,7 +1,4 @@
 export enum TodoState {
-    New = 0,
-    InProgress,
-    OverDue,
-    Completed,
-    Removed
+    InProgress = 0,
+    Completed
 }

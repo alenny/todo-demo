@@ -1,1 +1,19 @@
-<p>todos works!</p>
+<h1>Your Todo List</h1>
+<div>
+    <button mat-stroked-button color="primary" (click)="onNewClicked()">New</button>
+</div>
+<div class="todo-list">
+    <mat-card *ngFor="let item of todoItems" class="todo-card">
+        <mat-card-title>{{item.description}}</mat-card-title>
+        <mat-card-subtitle>
+            Due: {{item.dateTarget | date: 'yyyy-MM-dd HH:mm:ss'}}<br />
+            State: {{item.state | todoState}} 
+            <span *ngIf="isItemCompleted(item)">on {{item.dateCompleted | date: 'yyyy-MM-dd HH:mm:ss'}}</span>
+        </mat-card-subtitle>
+        <mat-card-actions>
+            <button mat-button color="primary" (click)="onEditClicked(item)">Edit</button>
+            <button mat-button color="primary" (click)="onCompleteClicked(item)">Complete</button>
+            <button mat-button color="warn" (click)="onDeleteClicked(item)">Delete</button>
+        </mat-card-actions>
+    </mat-card>
+</div>

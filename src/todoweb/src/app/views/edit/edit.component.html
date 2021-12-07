@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>New Todo</h1>
+<div mat-dialog-content>
+    <form [formGroup]="todo">
+        <mat-form-field>
+            <mat-label>What to do</mat-label>
+            <input matInput required type="text" placeholder="Ex. Wash car" formControlName="description" />
+            <mat-error *ngIf="todo.controls['description'].hasError('required')">
+                Description is required
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>When to complete</mat-label>
+            <input matInput [matDatepicker]="dateTargetPicker" formControlName="dateTarget">
+            <mat-datepicker-toggle matSuffix [for]="dateTargetPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateTargetPicker></mat-datepicker>
+        </mat-form-field>
+    </form>
+</div>
+<div mat-dialog-actions>
+    <button mat-raised-button (click)="onOkClicked()" cdkFocusInitial>OK</button>
+    <button mat-button (click)="onCancelClicked()">Cancel</button>
+</div>
