@@ -13,8 +13,9 @@
 ## Run Todo Web API
 1. Make sure .NET 6 SDK has been installed.
 2. Go to src/TodoApi in a command prompt.
-3. Run command:
+3. Run commands:
 ```
+dotnet dev-certs https --trust
 dotnet run
 ```
 
