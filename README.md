@@ -23,12 +23,14 @@ dotnet run
 ## Run Todo Web site
 1. Make sure Node.js 16 has been installed.
 2. Go to src/todoweb in a command prompt.
-3. Run command:
+3. Run commands:
 ```
+npm install
 npm start
 ```
+4. Local web site URL: http://localhost:4200
 
 ## Re-create Database with Initial Data
 1. Delete all DB files in src/TodoApi, including todo.db, todo.db-shm and todo.db-wal.
-2. Re-run Todo web API
+2. Re-run Todo web API.
 
