@@ -25,6 +25,7 @@ dotnet run
 2. Go to src/todoweb in a command prompt.
 3. Run command:
 ```
+npm install
 npm start
 ```
 
