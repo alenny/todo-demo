@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { EditTodoItemData } from 'src/app/models/edit-todo-item-data';
 import { TodoItem } from 'src/app/models/todo-item';
 import { TodoState } from 'src/app/models/todo-state';
 import { DataService } from 'src/app/services/data.service';
@@ -20,7 +21,7 @@ export class TodosComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.dataService.getTodoItems().subscribe(result => this.todoItems = result);
+    this.getData();
   }
 
   isItemCompleted(item: TodoItem): boolean {
@@ -29,37 +30,41 @@ export class TodosComponent implements OnInit {
 
   onNewClicked(): void {
     // Initial data
-    const data = new TodoItem(0, '', new Date());
+    const item = new TodoItem(0, '', new Date());
     const dialogRef = this.dialog.open(EditComponent, {
       width: '300px',
-      data: data
+      data: new EditTodoItemData(true, item)
     });
-    dialogRef.afterClosed().subscribe(i => {
-      if (!i) return;
-      this.dataService.createTodoItem(i);
+    dialogRef.afterClosed().subscribe(d => {
+      if (!d) return;
+      this.dataService.createTodoItem(d.item).subscribe(() => this.getData());
     });
   }
 
   onEditClicked(item: TodoItem): void {
     const dialogRef = this.dialog.open(EditComponent, {
       width: '300px',
-      data: item
+      data: new EditTodoItemData(false, item)
     });
-    dialogRef.afterClosed().subscribe(i => {
-      if (!i) return;
-      this.dataService.updateTodoItem(i);
+    dialogRef.afterClosed().subscribe(d => {
+      if (!d) return;
+      this.dataService.updateTodoItem(d.item).subscribe(() => this.getData());
     });
   }
 
   onCompleteClicked(item: TodoItem): void {
     item.dateCompleted = new Date();
     item.state = TodoState.Completed;
-    this.dataService.updateTodoItem(item);
+    this.dataService.updateTodoItem(item).subscribe(() => this.getData());
   }
 
   onDeleteClicked(item: TodoItem): void {
     if (confirm('Sure to delete?')) {
-      this.dataService.deleteTodoItem(item);
+      this.dataService.deleteTodoItem(item).subscribe(() => this.getData());
     }
+  }
+
+  private getData(): void {
+    this.dataService.getTodoItems().subscribe(result => this.todoItems = result);
   }
 }

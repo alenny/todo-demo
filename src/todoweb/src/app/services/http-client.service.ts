@@ -45,6 +45,23 @@ export class HttpClientService {
         return this.http.post<T>(this.getUrl(path), body, options);
     }
 
+    put<T>(path: string, body: any, options?: {
+        headers?: HttpHeaders | {
+            [header: string]: string | string[];
+        };
+        observe?: 'body';
+        params?: HttpParams | {
+            [param: string]: string | string[];
+        };
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<T> {
+        options = options || {};
+        this.decorateOptions(options);
+        return this.http.put<T>(this.getUrl(path), body, options);
+    }
+
     delete<T>(path: string, options?: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -63,7 +80,8 @@ export class HttpClientService {
     }
 
     private getUrl(path: string): string {
-        return `${environment.apiEndpoint}${path}`;
+        const url = `${environment.apiEndpoint}${path}`;
+        return url;
     }
 
     private decorateOptions(options: any): void {
