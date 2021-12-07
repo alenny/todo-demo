@@ -1,18 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { TodoItem } from '../models/todo-item';
-import { UserProfile } from '../models/user-profile';
 
 // In-memory data for test
-const MEM_PROFILES = [
-  new UserProfile(1, 'Dzy'),
-  new UserProfile(2, 'LY')
-];
-const MEM_TODOITEMS = [
-  new TodoItem(1, 1, 'house clean', new Date('2021-12-7T16:00:00Z')),
-  new TodoItem(2, 2, 'buy from grocery', new Date('2021-12-5T14:00:10Z')),
-  new TodoItem(3, 1, 'watch movie', new Date('2021-12-9T20:00:00Z')),
-  new TodoItem(4, 2, 'wash car', new Date('2021-12-10T22:30:10Z'))
+let MEM_TODOITEMS = [
+  new TodoItem(1, 'house clean', new Date('2021-12-07T16:00:00Z')),
+  new TodoItem(2, 'buy from grocery', new Date('2021-12-05T14:00:10Z')),
+  new TodoItem(3, 'watch movie', new Date('2021-12-09T20:00:00Z')),
+  new TodoItem(4, 'wash car', new Date('2021-12-10T22:30:10Z'))
 ];
 
 @Injectable({
@@ -20,23 +15,28 @@ const MEM_TODOITEMS = [
 })
 export class DataService {
 
-  private profiles: UserProfile[] = MEM_PROFILES;
   private todoItems: TodoItem[] = MEM_TODOITEMS;
 
-  constructor() { 
+  constructor() {
 
   }
 
-  getUserProfile(id: number): Observable<UserProfile> {
-    let p = this.profiles.filter(p => p.id === id);
-    return of(p[0]);
+  getTodoItems(): Observable<TodoItem[]> {
+    return of(this.todoItems);
   }
 
-  getUserProfiles(): Observable<UserProfile[]> {
-    return of(this.profiles);
+  createTodoItem(item: TodoItem): void {
+    item.id = this.todoItems.length > 0 ? this.todoItems[this.todoItems.length - 1].id + 1 : 1;
+    this.todoItems.push(item);
   }
 
-  getTodoItems(userId: number): Observable<TodoItem[]> {
-        return of(this.todoItems.filter(p => p.userId === userId));
+  updateTodoItem(item: TodoItem): void {
+  }
+
+  deleteTodoItem(item: TodoItem): void {
+    const idx = this.todoItems.findIndex(i => i.id === item.id);
+    if (idx >= 0) {
+      this.todoItems.splice(idx, 1);
+    }
   }
 }
