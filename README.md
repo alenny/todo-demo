@@ -28,8 +28,9 @@ dotnet run
 npm install
 npm start
 ```
+4. Local web site URL: http://localhost:4200
 
 ## Re-create Database with Initial Data
 1. Delete all DB files in src/TodoApi, including todo.db, todo.db-shm and todo.db-wal.
-2. Re-run Todo web API
+2. Re-run Todo web API.
 
