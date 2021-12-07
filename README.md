@@ -18,6 +18,7 @@
 dotnet dev-certs https --trust
 dotnet run
 ```
+4. Local API document endpoint: https://localhost:7143/swagger/index.html
 
 ## Run Todo Web site
 1. Make sure Node.js 16 has been installed.
